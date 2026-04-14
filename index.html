@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Trend — Урок 4.2: Gemini — Зеркало реальности</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#685BC7;--pl:#8578D8;--accent:#B5ED18;--dark:#0F0B2A;
+  --white:#FFF;--bg:#FAFAFA;--g50:#F5F5FA;--g100:#EDEDF5;--g200:#DDDCEE;--g400:#6E6893;
+  --red:#FF4757;--green:#2ED573;--orange:#FFA502;--cyan:#1DD1A1;--pink:#FF6B81;
+  --fh:'Unbounded',sans-serif;--fb:'Onest',sans-serif;
+}
+html{scroll-snap-type:y mandatory;overflow-y:scroll;height:100%;scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--bg);color:var(--dark);height:100%;-webkit-font-smoothing:antialiased}
+.slide{scroll-snap-align:start;min-height:100vh;width:100%;overflow:hidden;position:relative;display:flex}
+
+#tbar{position:fixed;top:0;left:0;width:100%;height:4px;background:var(--g100);z-index:200}
+#tfill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));width:0%;transition:width .4s;border-radius:0 2px 2px 0}
+#xp{position:fixed;top:14px;right:22px;background:var(--dark);color:var(--accent);font-family:var(--fh);font-size:12px;font-weight:700;padding:7px 16px;border-radius:100px;z-index:200;display:flex;align-items:center;gap:6px}
+#xp.b{animation:bump .4s}
+@keyframes bump{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+#xptoast{position:fixed;bottom:60px;right:22px;background:var(--accent);color:var(--dark);font-family:var(--fh);font-size:11px;font-weight:700;padding:8px 16px;border-radius:100px;z-index:200;opacity:0;transform:translateY(10px);transition:.3s;pointer-events:none}
+#xptoast.show{opacity:1;transform:translateY(0)}
+#dots{position:fixed;right:18px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:4px;z-index:100}
+.dt{width:5px;height:5px;border-radius:50%;background:var(--g200);cursor:pointer;transition:.3s}
+.dt.on{background:var(--primary);transform:scale(1.8)}
+#cnt{position:fixed;bottom:18px;right:26px;font-size:10px;font-weight:600;color:var(--g400);z-index:100}
+#kh{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;font-size:10px;font-weight:500;padding:6px 14px;border-radius:100px;z-index:100;transition:opacity .6s}
+#kh.h{opacity:0}
+
+@keyframes fu{from{opacity:0;transform:translateY(34px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.slide.v .a1{animation:fu .7s 0s cubic-bezier(.22,1,.36,1) both}
+.slide.v .a2{animation:fu .7s .1s cubic-bezier(.22,1,.36,1) both}
+.slide.v .a3{animation:fu .7s .2s cubic-bezier(.22,1,.36,1) both}
+.slide.v .a4{animation:fu .7s .3s cubic-bezier(.22,1,.36,1) both}
+.slide.v .a5{animation:fu .7s .4s cubic-bezier(.22,1,.36,1) both}
+.slide.v .a6{animation:fu .7s .5s cubic-bezier(.22,1,.36,1) both}
+
+.ey{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--primary);display:flex;align-items:center;gap:10px}
+.ey::before{content:'';width:28px;height:2px;background:var(--accent);flex-shrink:0}
+.txl{font-family:var(--fh);font-weight:900;letter-spacing:-.03em;color:var(--dark);line-height:.93;font-size:clamp(38px,5vw,72px)}
+.tlg{font-family:var(--fh);font-weight:900;letter-spacing:-.03em;color:var(--dark);line-height:1.05;font-size:clamp(24px,3.2vw,44px)}
+.tmd{font-family:var(--fh);font-weight:700;letter-spacing:-.02em;color:var(--dark);line-height:1.15;font-size:clamp(18px,2vw,28px)}
+.blg{font-size:clamp(14px,1.4vw,17px);line-height:1.7;color:#444}
+.bmd{font-size:clamp(12px,1.1vw,14px);line-height:1.65;color:var(--g400)}
+.tp{color:var(--primary)}.tg{color:var(--green)}.tr{color:var(--red)}.to{color:var(--orange)}
+
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--g50);border:1.5px solid var(--g200);border-radius:100px;padding:7px 16px;font-size:12px;font-weight:600}
+.tag.ac{background:var(--accent);border-color:var(--accent)}.tag.pr{background:var(--primary);border-color:var(--primary);color:#fff}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:100px;border:none;font-family:var(--fb);font-size:14px;font-weight:600;cursor:pointer;transition:transform .2s}
+.pill:hover{transform:translateY(-2px)}.pill:active{transform:scale(.97)}
+.pill.pr{background:var(--primary);color:#fff}.pill.ac{background:var(--accent);color:var(--dark)}.pill.dk{background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.25)}
+.pill.sm{padding:9px 20px;font-size:13px}
+
+.sc{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.inn{max-width:1000px;width:100%;padding:48px 64px}
+.inns{max-width:800px;width:100%;padding:48px 64px}
+.dv{height:1px;background:var(--g200);margin:24px 0}
+
+.cpb{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:1.5px solid var(--g200);background:var(--white);font-size:12px;font-weight:600;color:var(--primary);cursor:pointer;transition:all .25s;margin-top:8px}
+.cpb:hover{border-color:var(--primary);background:rgba(104,91,199,.05)}.cpb.ok{border-color:var(--green);color:var(--green)}
+.cpb.dk{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:var(--accent)}
+
+.logo{display:flex;align-items:center;gap:12px;font-family:var(--fh);font-weight:900;font-size:clamp(26px,3vw,44px);letter-spacing:-.03em}
+.logo-icon{position:relative;width:clamp(30px,3.5vw,50px);height:clamp(30px,3.5vw,50px);flex-shrink:0}
+.logo-a{position:absolute;inset:0;color:var(--primary);font-size:clamp(22px,2.8vw,38px);display:flex;align-items:center;justify-content:center;font-weight:900}
+.logo-dot{position:absolute;top:2px;right:2px;width:clamp(8px,1vw,14px);height:clamp(8px,1vw,14px);background:var(--accent);border-radius:50%}
+.logo-text{color:var(--primary)}
+
+.s1l{flex:1;display:flex;flex-direction:column;justify-content:center;padding:64px;gap:20px}
+.s1r{flex:1;background:var(--dark);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:64px;position:relative;overflow:hidden}
+.s1r::before{content:'';position:absolute;inset:0;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><circle cx="2" cy="2" r="1.5" fill="%23B5ED18" opacity=".1"/></svg>')}
+.topic-list{list-style:none;display:flex;flex-direction:column;gap:12px}
+.topic-list li{color:rgba(255,255,255,.8);font-size:clamp(13px,1.2vw,15px);font-weight:500;padding-left:24px;position:relative}
+.topic-list li::before{content:'✓';position:absolute;left:0;color:var(--accent);font-weight:700}
+.hero-emoji{font-size:clamp(80px,11vw,150px);animation:fl 3s ease-in-out infinite;display:block;text-align:center;margin-bottom:28px}
+
+.step-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.step-card{background:var(--white);border:2px solid var(--g200);border-radius:16px;padding:22px;transition:all .3s}
+.step-card:hover{border-color:var(--primary);transform:translateY(-3px);box-shadow:0 6px 20px rgba(104,91,199,.1)}
+.step-num{font-family:var(--fh);font-size:26px;font-weight:900;color:var(--accent);margin-bottom:10px}
+.step-title{font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:8px}
+
+.flow{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:center}
+.flow-icon{width:68px;height:68px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;transition:.3s}
+.flow-icon:hover{transform:scale(1.1)}
+.flow-arrow{font-size:22px;color:var(--g400)}
+
+.prompt-box{background:var(--white);border:2px solid var(--g200);border-radius:14px;padding:20px 24px;margin:12px 0;transition:border-color .3s}
+.prompt-box:hover{border-color:var(--primary)}
+.prompt-box.en{border-left:5px solid var(--green)}
+.prompt-box.ru{border-left:5px solid var(--accent)}
+.prompt-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--g400);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.prompt-text{font-size:14px;line-height:1.75;color:var(--dark)}
+
+.practice-area{width:100%;min-height:120px;border:2px solid var(--g200);border-radius:12px;padding:14px 16px;font-family:var(--fb);font-size:14px;resize:vertical;transition:border-color .3s;line-height:1.65}
+.practice-area:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(104,91,199,.1)}
+
+.block-shelf{display:flex;flex-wrap:wrap;gap:9px}
+.block{background:var(--white);border:2px solid var(--g200);border-radius:10px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:all .25s;user-select:none}
+.block:hover{border-color:var(--primary);transform:scale(1.03)}
+.block.selected{background:var(--primary);color:#fff;border-color:var(--primary);transform:scale(1.03)}
+.result-box{min-height:80px;border:2px dashed var(--g200);border-radius:12px;padding:16px;font-size:14px;line-height:1.7;color:var(--g400);transition:all .3s}
+.result-box.filled{border-style:solid;border-color:var(--green);color:var(--dark);background:rgba(46,213,115,.04)}
+
+.qprog{height:4px;background:var(--g100);border-radius:2px;margin-bottom:20px;overflow:hidden}
+.qprogb{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .4s;border-radius:2px}
+.quiz-q{font-family:var(--fh);font-size:clamp(16px,2vw,21px);font-weight:700;margin-bottom:18px;line-height:1.3}
+.qnum{font-size:11px;font-weight:600;color:var(--g400);margin-bottom:10px;letter-spacing:.06em;text-transform:uppercase}
+.qo{background:var(--white);border:2px solid var(--g200);border-radius:12px;padding:13px 18px;margin:7px 0;cursor:pointer;transition:all .25s;font-size:14px;line-height:1.5;text-align:left;width:100%;font-family:var(--fb)}
+.qo:hover{border-color:var(--primary);background:rgba(104,91,199,.04)}
+.qo.correct{background:rgba(46,213,115,.08);border-color:var(--green);color:var(--green);cursor:default}
+.qo.wrong{background:rgba(255,71,87,.08);border-color:var(--red);color:var(--red);cursor:default}
+.quiz-exp{background:rgba(181,237,24,.1);border:2px solid var(--accent);border-radius:12px;padding:14px 18px;margin-top:14px;font-size:13px;line-height:1.65}
+
+.game-cards{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:18px;min-height:36px}
+.game-card{background:var(--white);border:2px solid var(--g200);border-radius:10px;padding:9px 13px;font-size:13px;cursor:pointer;transition:all .25s;user-select:none}
+.game-card:hover{border-color:var(--primary)}
+.game-card.active{border-color:var(--primary);background:rgba(104,91,199,.1);transform:scale(1.05);font-weight:700}
+.zones{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.zone{border:3px dashed var(--g200);border-radius:16px;padding:16px;min-height:160px;text-align:center;transition:all .25s;cursor:pointer}
+.zone.good{border-color:rgba(46,213,115,.4)}.zone.bad{border-color:rgba(255,71,87,.4)}
+.zone:hover{background:rgba(104,91,199,.03)}
+.zone.highlight{border-style:solid;box-shadow:0 0 0 4px rgba(104,91,199,.15)}
+.zone-items{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
+.zone-item{background:var(--g50);border:1.5px solid var(--g200);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600}
+.zone-title{font-family:var(--fh);font-size:17px;font-weight:700;margin-bottom:5px}
+.zone-emoji{font-size:36px;margin-bottom:8px}
+
+.chk{display:flex;align-items:flex-start;gap:12px;padding:13px 0;cursor:pointer;border-bottom:1px solid var(--g100)}
+.chk:last-child{border-bottom:none}.chk:hover{opacity:.75}
+.cb{width:24px;height:24px;border:2px solid var(--g200);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .3s;font-size:14px;margin-top:2px}
+.chk.on .cb{background:var(--green);border-color:var(--green);color:#fff}
+.chk-text{font-size:15px;line-height:1.55;flex:1}
+
+.level-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.level-card{background:var(--white);border:3px solid var(--g200);border-radius:18px;padding:24px;text-align:center;transition:all .3s;cursor:pointer}
+.level-card:hover{transform:translateY(-5px);box-shadow:0 10px 28px rgba(0,0,0,.07)}
+.level-card.easy{border-color:var(--green)}.level-card.medium{border-color:var(--orange)}.level-card.hard{border-color:var(--red)}
+.level-emoji{font-size:48px;margin-bottom:10px}
+.level-title{font-family:var(--fh);font-size:16px;font-weight:700;margin-bottom:7px}
+.level-desc{font-size:13px;color:var(--g400);line-height:1.6}
+
+.hw-slide{background:var(--dark);color:#fff}
+.hwc{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.hw-card{background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.12);border-radius:18px;padding:22px;transition:.3s}
+.hw-card:hover{border-color:rgba(181,237,24,.4);background:rgba(181,237,24,.04)}
+.hw-card h3{font-family:var(--fh);font-size:17px;margin-bottom:9px;color:var(--accent)}
+.hw-card p{font-size:14px;line-height:1.7;color:rgba(255,255,255,.7)}
+
+.tool-badge{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:12px;font-family:var(--fh);font-size:13px;font-weight:700;border:2px solid}
+.tool-1{background:rgba(104,91,199,.08);border-color:rgba(104,91,199,.3);color:var(--primary)}
+.tool-2{background:rgba(255,165,2,.08);border-color:rgba(255,165,2,.35);color:var(--orange)}
+.tool-3{background:rgba(29,209,161,.08);border-color:rgba(29,209,161,.35);color:var(--cyan)}
+
+/* Gemini specific styles */
+.gemini-badge{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:12px;font-family:var(--fh);font-size:13px;font-weight:700;border:2px solid;background:linear-gradient(135deg,rgba(104,91,199,.1),rgba(29,209,161,.1));border-color:var(--cyan);color:var(--cyan)}
+
+.style-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.style-card{background:var(--white);border:2px solid var(--g200);border-radius:16px;padding:18px;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.style-card:hover{border-color:var(--primary);transform:translateY(-3px);box-shadow:0 8px 24px rgba(104,91,199,.12)}
+.style-card.active{border-color:var(--accent);background:rgba(181,237,24,.06)}
+.style-card-emoji{font-size:40px;margin-bottom:10px;display:block}
+.style-card-name{font-family:var(--fh);font-size:13px;font-weight:700;margin-bottom:4px}
+.style-card-desc{font-size:11px;color:var(--g400);line-height:1.5}
+
+.era-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:12px;border:2px solid var(--g200);background:var(--white);font-size:13px;font-weight:600;cursor:pointer;transition:all .25s;font-family:var(--fb)}
+.era-btn:hover{border-color:var(--primary);transform:translateY(-2px)}
+.era-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+.demo-result{border-radius:16px;overflow:hidden;border:3px solid var(--g200);position:relative;transition:all .3s;max-width:360px}
+.demo-result img{width:100%;height:280px;object-fit:cover;display:block}
+.demo-result:hover{border-color:var(--accent);box-shadow:0 12px 32px rgba(181,237,24,.2)}
+.demo-label{position:absolute;bottom:0;left:0;right:0;padding:10px 14px;font-family:var(--fh);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:rgba(15,11,42,.85);color:var(--accent)}
+
+.prompt-formula-card{background:linear-gradient(135deg,rgba(104,91,199,.05),rgba(181,237,24,.05));border:2px solid var(--g200);border-radius:16px;padding:22px;margin-top:16px}
+.formula-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.formula-item{background:var(--white);border:2px solid var(--g200);border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--dark)}
+.formula-dot{font-size:18px;color:var(--accent);font-weight:900}
+
+.selfie-checklist{display:flex;flex-direction:column;gap:12px}
+.selfie-item{display:flex;align-items:flex-start;gap:16px;padding:16px 20px;background:var(--white);border:2px solid var(--g200);border-radius:14px;transition:.3s}
+.selfie-item:hover{border-color:var(--primary)}
+
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.settings-card{background:var(--white);border:2px solid var(--g200);border-radius:14px;padding:18px;transition:.3s}
+.settings-card:hover{border-color:var(--cyan)}
+.settings-card .setting-icon{font-size:32px;margin-bottom:10px}
+.settings-card .setting-title{font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:6px;color:var(--dark)}
+.settings-card .setting-tip{font-size:12px;color:var(--g400);line-height:1.5}
+.settings-card .setting-pick{display:inline-block;margin-top:8px;padding:4px 12px;border-radius:100px;background:rgba(29,209,161,.12);color:var(--cyan);font-size:11px;font-weight:700}
+
+.light-demo{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.light-card{border-radius:14px;overflow:hidden;border:2px solid var(--g200);transition:.3s}
+.light-card img{width:100%;height:200px;object-fit:cover;display:block}
+.light-card:hover{border-color:var(--accent);transform:scale(1.02)}
+.light-label{padding:10px 14px;font-size:12px;font-weight:700;font-family:var(--fh);background:var(--g50)}
+
+@media(max-width:900px){
+  .slide{overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .s1r{display:none}.inn,.inns{padding:28px 18px}
+  .step-grid,.zones,.level-grid,.hwc,.settings-grid,.style-grid,.light-demo{grid-template-columns:1fr}
+  #dots{display:none}.tlg{font-size:clamp(20px,5.5vw,32px)}
+  .pill{padding:10px 20px;font-size:13px}.qo{padding:11px 15px;font-size:13px}
+  .flow{flex-direction:column;gap:8px}.flow-arrow{transform:rotate(90deg)}
+  .demo-result{max-width:100%}
+  .formula-row{gap:6px}
+}
+</style>
+</head>
+<body>
+<div id="tbar"><div id="tfill"></div></div>
+<div id="xp">✨ <span id="xpv">0</span> XP</div>
+<div id="xptoast">+0 XP</div>
+<div id="dots"></div>
+<div id="cnt"><span id="cc">1</span> / <span id="tc">21</span></div>
+<div id="kh">↑↓ или пробел</div>
+
+<!-- S1 ОБЛОЖКА -->
+<section class="slide">
+<div class="s1l">
+  <div class="logo a1"><div class="logo-icon"><div class="logo-a">a</div><div class="logo-dot"></div></div><span class="logo-text">trend</span></div>
+  <div class="ey a2">Модуль 1 • Урок 4.2</div>
+  <h1 class="txl a3">Gemini</h1>
+  <p class="txl a3" style="font-size:clamp(22px,2.8vw,40px);color:var(--primary)">Зеркало реальности</p>
+  <p class="blg a4" style="max-width:460px">Стираем грань между реальностью и воображением. Три способа с Google Flow и Gemini 3.1 — твой личный ИИ-стилист</p>
+  <div class="a5" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
+    <span class="tag ac">🪞 FaceSwap</span>
+    <span class="tag pr">🌊 Google Flow</span>
+    <span class="tag">🤖 Gemini 3.1</span>
+    <span class="tag" style="background:rgba(104,91,199,.06)">✨ +450 XP</span>
+  </div>
+</div>
+<div class="s1r">
+  <div class="hero-emoji">🪞</div>
+  <ul class="topic-list" style="position:relative;z-index:1">
+    <li>Nano Banana Pro — твой личный портной</li>
+    <li>Этика и правила ИИ-контента (SynthID)</li>
+    <li>Способ 1: FaceSwap в Google Flow</li>
+    <li>Способ 2: Face-Reference — два фото</li>
+    <li>Способ 3: Gemini 3.1 — диалог со стилистом</li>
+    <li>Секрет реализма: совпадение света</li>
+    <li>Домашнее задание: Мультивселенная Твоего Я</li>
+  </ul>
+</div>
+</section>
+
+<!-- S2 ЧТО ТАКОЕ NANO BANANA PRO -->
+<section class="slide">
+<div class="sc"><div class="inns">
+  <div class="ey a1">Инструмент</div>
+  <h2 class="tlg a2">Nano Banana Pro — личный портной для твоего лица</h2>
+  <p class="blg a3" style="margin-top:16px">Разберём само название. <strong class="tp">Nano</strong> — маленькое, точное и умное. <strong style="color:var(--orange)">Banana</strong> — инструмент, который «снимает кожуру» с обычного фото и показывает тебя в новом образе. <strong class="tg">Pro</strong> — профессиональный результат.</p>
+  <div class="a4" style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center">
+    <div>
+      <div style="background:rgba(255,71,87,.05);border:2px solid rgba(255,71,87,.2);border-radius:14px;padding:20px;margin-bottom:14px">
+        <div style="font-size:28px;margin-bottom:8px">🏬</div>
+        <div style="font-family:var(--fh);font-size:14px;font-weight:700;color:var(--red);margin-bottom:6px">Обычный фотосток</div>
+        <p class="bmd">Магазин одежды — всё уже сшито. Подошло? Повезло. Нет? Ищи в другом месте.</p>
+      </div>
+      <div style="background:rgba(104,91,199,.05);border:2px solid rgba(104,91,199,.3);border-radius:14px;padding:20px">
+        <div style="font-size:28px;margin-bottom:8px">🪡</div>
+        <div style="font-family:var(--fh);font-size:14px;font-weight:700;color:var(--primary);margin-bottom:6px">Nano Banana Pro</div>
+        <p class="bmd">Личный портной. Ты приходишь со своим лицом, говоришь «хочу стать бизнес-экспертом в Нью-Йорке» — и он делает это <em>именно для тебя</em>.</p>
+      </div>
+    </div>
+    <div style="text-align:center">
+      <div style="font-size:80px;margin-bottom:16px;animation:fl 3s ease-in-out infinite;display:block">🍌</div>
+      <p class="bmd" style="font-size:13px">Тысячи блогеров, предпринимателей и творческих людей используют его для создания контента</p>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- S3 ЭТИКА И ПРАВИЛА -->
+<section class="slide">
+<div class="sc"><div class="inn">
+  <div class="ey a1">Важно! Этика</div>
+  <h2 class="tlg a2">Правила ИИ-контента — работа с лицами это ответственность</h2>
+  <div class="a3" style="margin-top:20px;background:rgba(255,165,2,.06);border-left:5px solid var(--orange);padding:18px 22px;border-radius:10px">
+    <p class="blg">Мы живём в 2025 году. Правила игры стали строже. Запомни четыре главных правила — они защищают тебя и других.</p>
+  </div>
+  <div class="step-grid a4" style="margin-top:22px">
+    <div class="step-card" style="border-color:rgba(104,91,199,.35)">
+      <div style="font-size:28px;margin-bottom:10px">👤</div>
+      <div class="step-title tp">Только своё лицо!</div>
+      <p class="bmd">Твои правила — твой образ — твоя ответственность. Хочешь сделать аватар другу? Сначала спроси разрешение.</p>
+    </div>
+    <div class="step-card" style="border-color:rgba(255,71,87,.35)">
+      <div style="font-size:28px;margin-bottom:10px">🔒</div>
+      <div class="step-title tr">Дети и знаменитости под защитой</div>
+      <p class="bmd">Google категорически запрещает создавать реалистичные изображения детей и публичных людей без их согласия. В некоторых странах это нарушение закона.</p>
+    </div>
+    <div class="step-card" style="border-color:rgba(181,237,24,.4)">
+      <div style="font-size:28px;margin-bottom:10px">🏷️</div>
+      <div class="step-title" style="color:var(--accent)">Ставь метку #AIКонтент</div>
+      <p class="bmd">Добавь хештег или пометку «Создано нейросетью». Мы не обманываем зрителя — мы создаём искусство.</p>
+    </div>
+    <div class="step-card" style="border-color:rgba(29,209,161,.35)">
+      <div style="font-size:28px;margin-bottom:10px">✅</div>
+      <div class="step-title" style="color:var(--cyan)">SynthID — цифровой паспорт</div>
+      <p class="bmd">Google разработал невидимый цифровой водяной знак — SynthID. Встраивается в пиксели каждого ИИ-изображения. Специальные программы его обнаружат.</p>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- S4 ЧЕК-ЛИСТ СЕЛФИ -->
+<section class="slide">
+<div class="sc"><div class="inns">
+  <div class="ey a1">Подготовка</div>
+  <h2 class="tlg a2">Чек-лист идеального селфи — главный секрет результата</h2>
+  <p class="blg a3" style="margin-top:16px">Запомни: плохое селфи → плохой результат. Чёткое фото → профессиональная картинка. Вот и весь секрет:</p>
+  <div class="selfie-checklist a4" style="margin-top:24px">
+    <div class="selfie-item">
+      <span style="font-size:28px;flex-shrink:0">👁️</span>
+      <div><div style="font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:5px">Смотри чётко в камеру</div><p class="bmd">Не крути головой. Фронтальный взгляд — главное условие. ИИ строит 3D-карту твоего лица по геометрическим точкам.</p></div>
+    </div>
+    <div class="selfie-item">
+      <span style="font-size:28px;flex-shrink:0">☀️</span>
+      <div><div style="font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:5px">Встань лицом к свету</div><p class="bmd">К окну или к лампе. Никаких теней на лице! ИИ теряется в темноте и не может считать черты.</p></div>
+    </div>
+    <div class="selfie-item">
+      <span style="font-size:28px;flex-shrink:0">🕶️</span>
+      <div><div style="font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:5px">Сними очки, убери волосы со лба</div><p class="bmd">ИИ должен чётко видеть геометрию твоего лица. Очки и чёлка — помехи для алгоритма.</p></div>
+    </div>
+    <div class="selfie-item" style="border-color:rgba(255,71,87,.3);background:rgba(255,71,87,.02)">
+      <span style="font-size:28px;flex-shrink:0">😐</span>
+      <div><div style="font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:5px;color:var(--red)">Держи лицо нейтральным</div><p class="bmd">Никаких гримас! Если на селфи ты корчишь рожу — ИИ может «сломать» итоговую картинку.</p></div>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- S5 GOOGLE FLOW — ИНТЕРФЕЙС -->
+<section class="slide">
+<div class="sc"><div class="inn">
+  <div class="ey a1">Инструмент · Google Flow</div>
+  <h2 class="tlg a2">Знакомство с рабочим местом</h2>
+  <p class="blg a3" style="margin-top:12px">Для работы нам понадобится <strong class="tp">Google Flow</strong>. Вместе с доступом к курсу ты получил бесплатные кредиты. Посмотри нашу видеоинструкцию как зарегистрироваться!</p>
+  <div class="a4" style="margin-top:16px;display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:start">
+    <div>
+      <div style="border-radius:14px;overflow:hidden;border:2px solid var(--g200);box-shadow:0 8px 28px rgba(0,0,0,.12);margin-bottom:10px">
+        <img src="data/1776140002284_image.jpeg" style="width:100%;display:block;object-fit:cover">
+      </div>
+      <p class="bmd" style="font-size:11px;text-align:center;color:var(--g400)">↑ Так выглядит интерфейс Google Flow — кнопка «Создать проект»</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="background:var(--white);border:2px solid var(--g200);border-radius:12px;padding:14px">
+        <div style="font-size:22px;margin-bottom:6px">📝</div>
+        <div style="font-family:var(--fh);font-size:12px;font-weight:700;margin-bottom:3px">Поле ввода промпта</div>
+        <p class="bmd" style="font-size:11px">Длинное поле внизу — сюда вводишь текст запроса</p>
+      </div>
+      <div style="background:var(--white);border:2px solid var(--g200);border-radius:12px;padding:14px">
+        <div style="font-size:22px;margin-bottom:6px">➕</div>
+        <div style="font-family:var(--fh);font-size:12px;font-weight:700;margin-bottom:3px">Кнопка «+»</div>
+        <p class="bmd" style="font-size:11px">Рядом с полем — через неё добавляешь своё фото</p>
+      </div>
+      <div style="background:var(--white);border:2px solid var(--accent);border-radius:12px;padding:14px">
+        <div style="font-size:22px;margin-bottom:6px">⚙️</div>
+        <div style="font-family:var(--fh);font-size:12px;font-weight:700;margin-bottom:3px">Настройки</div>
+        <p class="bmd" style="font-size:11px">Формат, соотношение сторон, количество генераций</p>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:rgba(29,209,161,.06);border:2px solid rgba(29,209,161,.25);border-radius:12px">
+        <span style="font-size:18px;flex-shrink:0">💡</span>
+        <p class="bmd" style="font-size:12px"><strong style="color:var(--cyan)">Важно:</strong> После загрузки фото подожди несколько секунд — система должна считать лицо!</p>
+      </div>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- S6 СПОСОБ 1 — FACESWAP В GOOGLE FLOW -->
+<section class="slide">
+<div class="sc"><div class="inn">
+  <div class="ey a1">Способ 1 · Google Flow</div>
+  <h2 class="tlg a2">FaceSwap — ИИ запоминает твоё лицо</h2>
+  <div class="a3" style="margin-top:16px;display:grid;grid-template-columns:1fr 220px;gap:20px;align-items:start">
+    <div>
+      <p class="blg"><strong>Face-Reference</strong> — когда ты даёшь ИИ своё фото как «эталон». Он запоминает твои черты: форму носа, расстояние между глазами, линию подбородка. В отличие от простого FaceSwap — ИИ не «натягивает» лицо, он строит тебя заново в новом окружении.</p>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0">
+        <span class="gemini-badge">🌊 Google Flow</span>
+        <span style="color:var(--g400)">→</span>
+        <span class="tag">«+»</span>
+        <span style="color:var(--g400)">→</span>
+        <span class="tag pr">Загрузить</span>
+        <span style="color:var(--g400)">→</span>
+        <span class="tag ac">Generate</span>
+      </div>
+      <div class="step-grid" style="grid-template-columns:1fr 1fr">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <div class="step-title">Загрузи фото через «+»</div>
+          <p class="bmd">Открой библиотеку, загрузи своё селфи по чек-листу</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <div class="step-title">Подожди обработку</div>
+          <p class="bmd">Миниатюра в поле ввода = фото принято. Не торопись!</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <div class="step-title">Вставь промпт</div>
+          <p class="bmd">Скопируй промпт из следующего слайда</p>
+        </div>
+        <div class="step-card" style="border-color:var(--accent)">
+          <div class="step-num" style="color:var(--primary)">04</div>
+          <div class="step-title">Фото · 16:9 · 2 варианта</div>
+          <p class="bmd">Два варианта — золотой баланс</p>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center">
+      <div style="border-radius:14px;overflow:hidden;border:3px solid rgba(104,91,199,.4);box-shadow:0 8px 24px rgba(104,91,199,.15)">
+        <img src="data/WhatsApp_Image_2026-02-04_at_13_26_09__1_.jpeg" style="width:100%;display:block;object-fit:cover;object-position:top;height:280px">
+      </div>
+      <div style="margin-top:8px;display:inline-flex;align-items:center;gap:6px;background:rgba(104,91,199,.08);border:1.5px solid rgba(104,91,199,.25);border-radius:100px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--primary)">👤 Идеальное селфи</div>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- S7 НАСТРОЙКИ GOOGLE FLOW -->
+<section class="slide">
+<div class="sc"><div class="inns">
+  <div class="ey a1">Детали · Настройки</div>
+  <h2 class="tlg a2">Три настройки, которые влияют на результат</h2>
+  <p class="blg a3" style="margin-top:16px">Видишь справа снизу маленькую иконку настроек рядом с кнопкой отправки? Разберём каждый пункт:</p>
+  <div class="settings-grid a4" style="margin-top:24px">
+    <div class="settings-card">
+      <div class="setting-icon">🖼️</div>
+      <div class="setting-title">Формат результата</div>
+      <p class="setting-tip">Фото или видео. Сегодня нам нужно фото — сначала убедись, что лицо переносится хорошо. Видео — это отдельная мощная история.</p>
+      <span class="setting-pick">✅ Выбираем: Фото</span>
+    </div>
+    <div class="settings-card">
+      <div class="setting-icon">📐</div>
+      <div class="setting-title">Соотношение сторон</div>
+      <p class="setting-tip">16:9 горизонтальное — для YouTube, презентаций, большого экрана. Вертикальное — для TikTok, Instagram Reels, Stories.</p>
+      <span class="setting-pick">✅ Выбираем: 16:9</span>
+    </div>
+    <div class="settings-card">
+      <div class="setting-icon">🔢</div>
+      <div class="setting-title">Количество генераций</div>
+      <p class="setting-tip">ИИ каждый раз интерпретирует промпт по-своему. Один результат лучше, другой хуже. Два варианта = выбор лучшего.</p>
+      <span class="setting-pick">✅ Выбираем: 2</span>
+    </div>
+  </div>
+  <div class="a5" style="margin-top:20px;padding:16px 20px;background:rgba(181,237,24,.08);border:2px solid rgba(181,237,24,.3);border-radius:12px">
+    <p class="blg"><strong class="tp">💡 Секрет профи:</strong> Один и тот же промпт даёт разный результат при повторном нажатии Generate! ИИ использует элемент случайности. Профессионалы генерируют 10–20 вариантов и выбирают лучший.</p>
+  </div>
+</div></div>
+</section>
+
+<!-- S8 ПРОМПТ №1 — HELICOPTER SHOT -->
+<section class="slide">
+<div class="sc"><div class="inns">
+  <div class="ey a1">Практика · Промпт 1</div>
+  <h2 class="tlg a2">Промпт №1 — Аэрофотосъёмка / Helicopter Shot</h2>
+  <div class="a3" style="margin-top:16px">
+    <div class="prompt-formula-card">
+      <p class="bmd" style="font-weight:700;margin-bottom:4px">Формула промпта:</p>
+      <div class="formula-row">
+        <div class="formula-item">[Объект]</div><span class="formula-dot">·</span>
+        <div class="formula-item">[Действие]</div><span class="formula-dot">·</span>
+        <div class="formula-item">[Стиль]</div><span class="formula-dot">·</span>
+        <div class="formula-item">[Настроение]</div><span class="formula-dot">·</span>
+        <div class="formula-item">[Детали]</div>
+      </div>
+    </div>
+  </div>
+  <div class="a4" style="margin-top:16px">
+    <div class="prompt-box ru">
+      <div class="prompt-label">🇷🇺 Русский</div>
+      <p class="prompt-text" id="p1ru">Гиперреалистичная аэрофотография, сделанная на iPhone. Открытый вертолёт пролетает очень близко к Статуе Свободы. Перспектива немного смещена вверх и в сторону, что чётко показывает высоту. Река и горизонт Нью-Йорка простираются вдаль, а мягкие городские огни начинают разгораться. Человек с фото сидит в открытом вертолёте, на ней авиационные наушники. Волосы откинуты назад ветром. Выражение лица решительное, спокойное. Естественный голубой свет.</p>
+      <button class="cpb" onclick="copyText(this, document.getElementById('p1ru').textContent)">📋 Скопировать RU</button>
+    </div>
+    <div class="prompt-box en">
+      <div class="prompt-label">🇬🇧 English</div>
+      <p class="prompt-text" id="p1en">A hyper-realistic aerial iPhone photo. An open helicopter flies extremely close to the Statue of Liberty. The perspective is slightly above and to the side, clearly showing altitude. The river and the skyline of New York City stretch into the distance, and the soft city lights begin to flare up. The person in the photo is sitting in an open helicopter, she's wearing aviation headphones with a microphone. Her hair is blown back by the wind. Her expression is resolute, calm. Natural blue light combined with iPhone's sharp aerial perspective. Hyper-realistic, 8k.</p>
+      <button class="cpb" onclick="copyText(this, document.getElementById('p1en').textContent)">📋 Скопировать EN</button>
+    </div>
+  </div>
+  <div style="margin-top:16px;padding:16px 20px;background:rgba(46,213,115,.06);border:2px solid var(--green);border-radius:14px;display:flex;align-items:flex-start;gap:12px">
+    <span style="font-size:28px;flex-shrink:0">🛡️</span>
+    <div>
+      <p style="font-family:var(--fh);font-size:13px;font-weight:900;color:var(--green);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Если Flow показывает Baby Face Control — не переживай!</p>
+      <p class="bmd" style="font-size:13px">Это <strong style="color:var(--green)">АБСОЛЮТНО БЕЗОПАСНО ДЛЯ ДЕТЕЙ</strong> — Google Flow просто проверяет фото на наличие детского лица и отказывает в генерации, чтобы защитить детей. Gemini работает на той же технологии Google и тоже <strong style="color:var(--green)">НЕ ГЕНЕРИРУЕТ ОПАСНЫЙ КОНТЕНТ С ДЕТЬМИ</strong>. Если ты молодо выглядишь — просто переключись на <strong class="tp">Gemini → Создание изображений</strong> и повтори те же шаги там!</p>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- S9 СПОСОБ 2 — FACE-REFERENCE -->
+<section class="slide">
+<div class="sc"><div class="inn">
+  <div class="ey a1">Способ 2 · Два фото</div>
+  <h2 class="tlg a2">Face-Reference — ты + персонаж = магия</h2>
+  <p class="blg a3" style="margin-top:16px">Загружаем <strong class="tp">два фото</strong>: твоё селфи и фото персонажа куда хочешь поместить своё лицо. ИИ читает оба изображения и строит тебя в образе персонажа.</p>
+  <div class="a4" style="margin-top:20px;display:grid;grid-template-columns:1fr 40px 1fr 40px 1fr;gap:0;align-items:center">
+    <div style="border:3px solid rgba(104,91,199,.4);border-radius:16px;overflow:hidden;position:relative">
+      <img src="data/WhatsApp_Image_2026-02-04_at_13_26_09__1_.jpeg" style="width:100%;height:200px;object-fit:cover;object-position:top;display:block">
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:8px 12px;background:rgba(104,91,199,.9);font-family:var(--fh);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#fff">Твоё фото (Face-Reference)</div>
+    </div>
+    <div style="text-align:center;color:var(--accent);font-size:24px;font-weight:900">+</div>
+    <div style="border:3px solid rgba(255,165,2,.4);border-radius:16px;overflow:hidden;position:relative">
+      <img src="data/images-4.jpeg" style="width:100%;height:200px;object-fit:cover;object-position:top;display:block">
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:8px 12px;background:rgba(15,11,42,.85);font-family:var(--fh);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent)">Персонаж (Harley Quinn)</div>
+    </div>
+    <div style="text-align:center;color:var(--primary);font-size:24px;font-weight:900">=</div>
+    <div style="border:3px solid rgba(46,213,115,.5);border-radius:16px;overflow:hidden;position:relative">
+      <img src="data/Face_swap_harley_quinn_person_fd4f980d4f.jpeg" style="width:100%;height:200px;object-fit:cover;object-position:top;display:block">
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:8px 12px;background:rgba(46,213,115,.9);font-family:var(--fh);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--dark)">Результат ✅</div>
+    </div>
+  </div>
+  <div class="a5" style="margin-top:16px;padding:14px 18px;background:rgba(255,165,2,.06);border-left:4px solid var(--orange);border-radius:10px">
+    <p class="blg"><strong class="to">⚠️ Важно:</strong> Первая генерация может дать странный результат — это нормально! Модель только познакомилась с твоим лицом. Ставь 4 варианта сразу и жми Generate несколько раз. С каждой генерацией ИИ буквально учится твоим чертам.</p>
+  </div>
+</div></div>
+</section>
+
+<!-- S10 ПРОМПТ №2 — FACE SWAP -->
+<section class="slide">
+<div class="sc"><div class="inns">
+  <div class="ey a1">Практика · Промпт 2</div>
+  <h2 class="tlg a2">Промпт №2 — Face Swap с персонажем</h2>
+  <p class="blg a3" style="margin-top:12px">Замени <code style="background:var(--g100);padding:2px 8px;border-radius:6px;font-weight:700">[YOUR CHARACTER]</code> на имя своего персонажа. Я пишу Harley Quinn — это мой любимый персонаж из DC!</p>
+  <div class="a4" style="margin-top:16px">
+    <div class="prompt-box ru">
+      <div class="prompt-label">🇷🇺 Русский</div>
+      <p class="prompt-text" id="p2ru">Высококачественный фейс-своп: замените лицо [Харли Квинн] на втором фото точными чертами лица и идентичностью человека с первого фото. Обеспечьте бесшовное слияние с оригинальным освещением и кинематографической атмосферой [Харли Квинн]. Гиперреалистично, 8k.</p>
+      <button class="cpb" onclick="copyText(this, document.getElementById('p2ru').textContent)">📋 Скопировать RU</button>
+    </div>
+    <div class="prompt-box en">
+      <div class="prompt-label">🇬🇧 English</div>
+      <p class="prompt-text" id="p2en">High-quality face swap: replace the face of [YOUR CHARACTER] in the second photo with the exact facial features and identity of the person from the first photo. Ensure a seamless blend with the original lighting and cinematic atmosphere of [YOUR CHARACTER]. Hyper-realistic, 8k.</p>
+      <button class="cpb" onclick="copyText(this, document.getElementById('p2en').textContent)">📋 Скопировать EN</button>
+    </div>
+    <div style="margin-top:14px;background:rgba(104,91,199,.05);border-radius:12px;padding:14px 18px">
+      <p class="bmd" style="font-size:13px"><strong class="tp">🔑 Ключевые слова промпта:</strong> <strong>seamless blend</strong> (бесшовное слияние) + <strong>exact facial features</strong> (точные черты лица). Всегда указывай с какого фото берутся черты лица!</p>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- S11 СПОСОБ 3 — GEMINI 3.1 -->
+<section class="slide">
+<div class="sc"><div class="inn">
+  <div class="ey a1">Способ 3 · Вишенка на торте</div>
+  <h2 class="tlg a2">Gemini 3.1 — твой личный ИИ-стилист</h2>
+  <p class="blg a3" style="margin-top:16px">Представь, что у тебя есть персональный стилист, который никогда не спит, не устаёт и знает все тренды мира. Именно таким является <strong class="tp">Gemini 3.1</strong>.</p>
+  <div class="a4" style="margin-top:24px">
+    <div class="flow" style="justify-content:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+      <span class="gemini-badge">🤖 Gemini 3.1</span>
+      <span style="color:var(--g400)">→</span>
+      <span class="tag">Инструменты</span>
+      <span style="color:var(--g400)">→</span>
+      <span class="tag pr">Создание изображений</span>
+      <span style="color:var(--g400)">→</span>
+      <span class="tag ac">Выбери стиль</span>
+    </div>
+    <div class="style-grid">
+      <div class="style-card">
+        <span class="style-card-emoji">🎨</span>
+        <div class="style-card-name">Масло на холсте</div>
+        <div class="style-card-desc">Классическая живопись с богатой текстурой</div>
+      </div>
+      <div class="style-card">
+        <span class="style-card-emoji">🖋️</span>
+        <div class="style-card-name">Графика / Ink</div>
+        <div class="style-card-desc">Чёрно-белые линии, экспрессия</div>
+      </div>
+      <div class="style-card">
+        <span class="style-card-emoji">🌊</span>
+        <div class="style-card-name">Акварель</div>
+        <div class="style-card-desc">Нежные переходы и прозрачность</div>
+      </div>
+      <div class="style-card active">
+        <span class="style-card-emoji">📸</span>
+        <div class="style-card-name">Фото-реализм</div>
+        <div class="style-card-desc">Гиперреалистичный результат — как настоящее фото!</div>
+      </div>
+      <div class="style-card">
+        <span class="style-card-emoji">🤖</span>
+        <div class="style-card-name">Sci-fi / Футуризм</div>
+        <div class="style-card-desc">Неон, киберпанк, технологии</div>
+      </div>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- S12 ПРОМПТ №3 — GEMINI СТИЛИСТ -->
+<section class="slide">
+<div class="sc"><div class="inns">
+  <div class="ey a1">Практика · Промпт 3</div>
+  <h2 class="tlg a2">Диалог со стилистом — Викторианская эпоха</h2>
+  <p class="blg a3" style="margin-top:12px">Прикрепи своё фото в Gemini и скажи ему на обычном языке что хочешь изменить. Он понимает тебя!</p>
+  <div class="a4" style="margin-top:16px">
+    <div class="prompt-box ru">
+      <div class="prompt-label">🇷🇺 Русский</div>
+      <p class="prompt-text" id="p3ru">Возьми это изображение и «переодень» меня в стиль викторианской эпохи. Сохрани освещение и черты лица. Добавь детали: корсет, кружева, высокую причёску.</p>
+      <button class="cpb" onclick="copyText(this, document.getElementById('p3ru').textContent)">📋 Скопировать RU</button>
+    </div>
+    <div class="prompt-box en">
+      <div class="prompt-label">🇬🇧 English</div>
+      <p class="prompt-text" id="p3en">Take this image and dress me in Victorian era style. Preserve the lighting and facial features. Add details: corset, lace, high hairstyle. Keep the face recognizable and realistic. Style: oil painting.</p>
+      <button class="cpb" onclick="copyText(this, document.getElementById('p3en').textContent)">📋 Скопировать EN</button>
+    </div>
+    <div style="margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
+      <div style="padding:12px 14px;background:rgba(104,91,199,.05);border-radius:10px;border:1.5px solid rgba(104,91,199,.2)">
+        <p class="bmd" style="font-size:12px"><strong class="tp">💡 Совет:</strong> Попроси Gemini сменить освещение, эпоху или настроение — без изменения лица!</p>
+      </div>
+      <div style="padding:12px 14px;background:rgba(181,237,24,.06);border-radius:10px;border:1.5px solid rgba(181,237,24,.3)">
+        <p class="bmd" style="font-size:12px"><strong style="color:var(--accent)">🎨 Другие эпохи:</strong> Древний Рим, Космос 2100, Япония эпохи Эдо — пробуй всё!</p>
+      </div>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- S13 ПРАКТИКА — ПОСТРОЙ СВОЙ ПРОМПТ ДЛЯ GEMINI -->
+<section class="slide">
+<div class="sc"><div class="inns">
+  <div class="ey a1">Практика · Конструктор</div>
+  <h2 class="tlg a2">Собери промпт для Gemini</h2>
+  <p class="blg a3" style="margin-top:12px">Выбери эпоху, стиль и детали — конструктор соберёт промпт автоматически:</p>
+  <div class="a4" style="margin-top:20px">
+    <p class="bmd" style="font-weight:700;margin-bottom:10px">🕰️ Выбери эпоху:</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+      <button class="era-btn" onclick="setEra(this,'Викторианская Англия','Victorian England')">🎩 Викторианская</button>
+      <button class="era-btn" onclick="setEra(this,'Древний Рим','Ancient Rome')">🏛️ Древний Рим</button>
+      <button class="era-btn" onclick="setEra(this,'Космос 2100','Space 2100')">🚀 Космос 2100</button>
+      <button class="era-btn" onclick="setEra(this,'Японская эпоха Эдо','Japanese Edo period')">🌸 Япония Эдо</button>
+      <button class="era-btn" onclick="setEra(this,'Киберпанк Токио','Cyberpunk Tokyo')">⚡ Киберпанк</button>
+    </div>
+    <p class="bmd" style="font-weight:700;margin-bottom:10px">🎨 Выбери стиль:</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+      <button class="era-btn" id="sty-1" onclick="setStyle(this,'масло на холсте','oil painting on canvas')">🎨 Масло</button>
+      <button class="era-btn" id="sty-2" onclick="setStyle(this,'фото-реализм','hyper-realistic photo')">📸 Фото</button>
+      <button class="era-btn" id="sty-3" onclick="setStyle(this,'акварель','watercolor painting')">🌊 Акварель</button>
+      <button class="era-btn" id="sty-4" onclick="setStyle(this,'цифровое искусство','digital art')">💻 Digital Art</button>
+    </div>
+    <p class="bmd" style="font-weight:700;margin-bottom:10px">📦 Твой промпт:</p>
+    <div class="result-box" id="era-result">← Сначала выбери эпоху и стиль</div>
+    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+      <button class="cpb" id="era-copy-ru" style="display:none" onclick="copyEraRu()">📋 Скопировать RU</button>
+      <button class="cpb" id="era-copy-en" style="display:none" onclick="copyEraEn()">📋 Скопировать EN</button>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- S14 ПРАКТИКА — TEXTAREA -->
+<section class="slide">
+<div class="sc"><div class="inns">
+  <div class="ey a1">Практика · Свой промпт</div>
+  <h2 class="tlg a2">Напиши свой промпт для Gemini-стилиста</h2>
+  <p class="blg a3" style="margin-top:12px">Ты можешь попросить Gemini что угодно на обычном языке. Попробуй разные варианты:</p>
+  <div class="a4" style="margin-top:20px">
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+      <button class="tag" style="cursor:pointer" onclick="fillTA('Переодень меня в стиль 80-х: яркие цвета, начёс, неон. Сохрани черты лица.')">🌈 Стиль 80-х</button>
+      <button class="tag" style="cursor:pointer" onclick="fillTA('Помести меня на Mars в скафандре будущего. Реалистично, фото NASA.')">🚀 Марс</button>
+      <button class="tag" style="cursor:pointer" onclick="fillTA('Смени освещение на золотой закат. Лёгкий летний ветер. Сохрани лицо.')">🌅 Золотой закат</button>
+      <button class="tag" style="cursor:pointer" onclick="fillTA('Одень меня как самурай эпохи Эдо. Японская акварель. Катана.')">⚔️ Самурай</button>
+    </div>
+    <textarea class="practice-area" id="ta1" placeholder="Напиши свой промпт для Gemini на русском или английском...&#10;Например: Переодень меня в стиль ренессанса. Масляная живопись. Сохрани лицо."></textarea>
+    <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+      <button class="pill pr sm" onclick="aXP(150);this.textContent='✅ +150 XP!';setTimeout(()=>this.textContent='💫 Использовать в Gemini',2000)">💫 Использовать в Gemini</button>
+      <button class="cpb" onclick="copyText(this, document.getElementById('ta1').value)">📋 Скопировать</button>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- S15 СЕКРЕТ РЕАЛИЗМА — СВЕТ -->
+<section class="slide">
+<div class="sc"><div class="inn">
+  <div class="ey a1">Секрет профи</div>
+  <h2 class="tlg a2">Зеркало реальности — секрет в свете</h2>
+  <p class="blg a3" style="margin-top:16px">Почему некоторые генерации выглядят <strong class="tr">ненатурально</strong>, а другие — <strong class="tg">как настоящее фото</strong>? Секрет — в совпадении источника света.</p>
+  <div class="a4" style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div style="background:rgba(255,71,87,.04);border:2px solid rgba(255,71,87,.25);border-radius:16px;padding:22px">
+      <div style="font-size:36px;margin-bottom:12px">❌</div>
+      <div style="font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:10px;color:var(--red)">Свет не совпадает</div>
+      <p class="bmd">Лицо освещено слева, а тени на фоне падают справа. Мозг мгновенно чувствует обман — картинка выглядит фальшиво.</p>
+    </div>
+    <div style="background:rgba(46,213,115,.04);border:2px solid rgba(46,213,115,.3);border-radius:16px;padding:22px">
+      <div style="font-size:36px;margin-bottom:12px">✅</div>
+      <div style="font-family:var(--fh);font-size:15px;font-weight:700;margin-bottom:10px;color:var(--green)">Свет совпадает!</div>
+      <p class="bmd">Когда свет на лице совпадает с источником света на фоне — мозг воспринимает картинку как реальную. Именно это делает Nano Banana Pro автоматически!</p>
+    </div>
+  </div>
+  <div class="a5" style="margin-top:20px;text-align:center;padding:20px;background:var(--g50);border-radius:16px;border:2px solid var(--g200)">
+    <p class="blg"><strong class="tp">Как проверить качество своей генерации?</strong> Посмотри — откуда падает свет на фоне? Если на твоём лице тень с той же стороны — 🏆 отличный результат!</p>
+  </div>
+</div></div>
+</section>
+
+<!-- S16 ПРАКТИКА — СТИЛИСТ TEXTAREA -->
+<section class="slide">
+<div class="sc"><div class="inns">
+  <div class="ey a1">Практика · Стилист</div>
+  <h2 class="tlg a2">Стань своим стилистом — три трансформации</h2>
+  <p class="blg a3" style="margin-top:12px">Возьми один из своих аватаров и попроси Gemini три раза изменить его. Посмотри как далеко можно зайти, не меняя исходное лицо!</p>
+  <div class="a4" style="margin-top:16px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+      <div style="background:var(--white);border:2px solid var(--g200);border-radius:12px;padding:14px;text-align:center;cursor:pointer;transition:.3s" onmouseenter="this.style.borderColor='var(--cyan)'" onmouseleave="this.style.borderColor='var(--g200)'" onclick="fillTA2('Смени только освещение на золотой час заката. Тёплые тона. Сохрани всё остальное без изменений.')">
+        <div style="font-size:32px;margin-bottom:8px">💡</div>
+        <div style="font-family:var(--fh);font-size:12px;font-weight:700;margin-bottom:4px">Смени освещение</div>
+        <p class="bmd" style="font-size:11px">Тот же образ, новый свет</p>
+      </div>
+      <div style="background:var(--white);border:2px solid var(--g200);border-radius:12px;padding:14px;text-align:center;cursor:pointer;transition:.3s" onmouseenter="this.style.borderColor='var(--primary)'" onmouseleave="this.style.borderColor='var(--g200)'" onclick="fillTA2('Смени эпоху на Средневековую Европу. Рыцарский турнир. Корона. Сохрани черты лица.')">
+        <div style="font-size:32px;margin-bottom:8px">🏰</div>
+        <div style="font-family:var(--fh);font-size:12px;font-weight:700;margin-bottom:4px">Смени эпоху</div>
+        <p class="bmd" style="font-size:11px">Из настоящего в прошлое</p>
+      </div>
+      <div style="background:var(--white);border:2px solid var(--g200);border-radius:12px;padding:14px;text-align:center;cursor:pointer;transition:.3s" onmouseenter="this.style.borderColor='var(--accent)'" onmouseleave="this.style.borderColor='var(--g200)'" onclick="fillTA2('Смени настроение: сделай портрет загадочным, тёмным, кинематографическим. Без улыбки. Глубокие тени.')">
+        <div style="font-size:32px;margin-bottom:8px">🎭</div>
+        <div style="font-family:var(--fh);font-size:12px;font-weight:700;margin-bottom:4px">Смени настроение</div>
+        <p class="bmd" style="font-size:11px">Меняй атмосферу, не лицо</p>
+      </div>
+    </div>
+    <textarea class="practice-area" id="ta2" placeholder="Выбери один из вариантов выше или напиши свой..."></textarea>
+    <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+      <button class="pill pr sm" onclick="aXP(150);this.textContent='✅ +150 XP!';setTimeout(()=>this.textContent='🎨 Применить стиль',2000)">🎨 Применить стиль</button>
+      <button class="cpb" onclick="copyText(this, document.getElementById('ta2').value)">📋 Скопировать</button>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- S17 КВИЗ -->
+<section class="slide">
+<div class="sc"><div class="inns">
+  <div class="ey a1">Проверь себя</div>
+  <h2 class="tlg a2" style="margin-bottom:20px">Квиз — <span class="tp">+200 XP</span></h2>
+  <div class="qprog"><div class="qprogb" id="qprogb" style="width:0%"></div></div>
+  <div id="quiz-container"></div>
+</div></div>
+</section>
+
+<!-- S18 МИНИ-ИГРА СОРТИРОВКА -->
+<section class="slide">
+<div class="sc"><div class="inns">
+  <div class="ey a1">Мини-игра · Сортировка</div>
+  <h2 class="tlg a2">Сортируй: что можно, что нельзя?</h2>
+  <p class="blg a3" style="margin-top:10px;margin-bottom:14px">Кликни на карточку, затем на зону. Рассортируй все!</p>
+  <div class="game-cards" id="game-cards"></div>
+  <div class="zones">
+    <div class="zone good" id="zone-good" onclick="placeCard(true)">
+      <div class="zone-emoji">✅</div>
+      <div class="zone-title">Допустимо</div>
+      <div class="zone-items" id="zone-good-items"></div>
+    </div>
+    <div class="zone bad" id="zone-bad" onclick="placeCard(false)">
+      <div class="zone-emoji">❌</div>
+      <div class="zone-title">Запрещено</div>
+      <div class="zone-items" id="zone-bad-items"></div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <button class="pill pr sm" id="check-game" style="display:none" onclick="checkGame()">Проверить ✓</button>
+    <button class="pill sm" id="reset-game" style="display:none;background:var(--g100);color:var(--dark)" onclick="resetGame()">🔄 Заново</button>
+    <span id="game-result" style="font-family:var(--fh);font-size:15px;font-weight:700"></span>
+  </div>
+</div></div>
+</section>
+
+<!-- S19 ВЫЗОВ ПО УРОВНЯМ -->
+<section class="slide">
+<div class="sc"><div class="inn">
+  <div class="ey a1">Вызов · Уровни</div>
+  <h2 class="tlg a2">Выбери свой уровень вызова</h2>
+  <p class="blg a3" style="margin-top:16px;margin-bottom:20px">Все три задания — с использованием Google Flow или Gemini. Попробуй свои возможности!</p>
+  <div class="level-grid a4">
+    <div class="level-card easy">
+      <div class="level-emoji">🟢</div>
+      <div class="level-title">Лёгкий</div>
+      <p class="level-desc">Создай один аватар себя в историческом костюме через Google Flow. Используй промпт №1 с урока. Проверь — узнаваемо ли твоё лицо?</p>
+      <div style="margin-top:14px">
+        <button class="pill sm" style="background:rgba(46,213,115,.12);color:var(--green);border:2px solid var(--green)" onclick="aXP(50)">+50 XP за выполнение</button>
+      </div>
+    </div>
+    <div class="level-card medium">
+      <div class="level-emoji">🟡</div>
+      <div class="level-title">Средний</div>
+      <p class="level-desc">Возьми фото любимого персонажа, сделай FaceSwap через Способ 2 (Face-Reference). Сгенерируй минимум 4 варианта и выбери лучший.</p>
+      <div style="margin-top:14px">
+        <button class="pill sm" style="background:rgba(255,165,2,.12);color:var(--orange);border:2px solid var(--orange)" onclick="aXP(100)">+100 XP за выполнение</button>
+      </div>
+    </div>
+    <div class="level-card hard">
+      <div class="level-emoji">🔴</div>
+      <div class="level-title">Сложный</div>
+      <p class="level-desc">Через Gemini 3.1 создай три разных образа из одного фото: смени освещение, эпоху и настроение. Все три должны оставаться узнаваемыми!</p>
+      <div style="margin-top:14px">
+        <button class="pill sm" style="background:rgba(255,71,87,.1);color:var(--red);border:2px solid var(--red)" onclick="aXP(150)">+150 XP за выполнение</button>
+      </div>
+    </div>
+  </div>
+</div></div>
+</section>
+
+<!-- S20 ЧЕК-ЛИСТ -->
+<section class="slide">
+<div class="sc"><div class="inns">
+  <div class="ey a1">Итоги урока</div>
+  <h2 class="tlg a2">Чек-лист — всё ли ты освоил? <span style="font-size:20px;color:var(--accent)">+100 XP</span></h2>
+  <div style="margin-top:20px" id="checklist">
+    <div class="chk" onclick="toggle(this)"><div class="cb"></div><div class="chk-text">Я знаю что такое Nano Banana Pro и чем он лучше обычного фотостока</div></div>
+    <div class="chk" onclick="toggle(this)"><div class="cb"></div><div class="chk-text">Я понимаю четыре главных правила этики ИИ-контента (включая SynthID)</div></div>
+    <div class="chk" onclick="toggle(this)"><div class="cb"></div><div class="chk-text">Я знаю чек-лист идеального селфи для FaceSwap</div></div>
+    <div class="chk" onclick="toggle(this)"><div class="cb"></div><div class="chk-text">Я умею работать с интерфейсом Google Flow (нижняя панель, «+», настройки)</div></div>
+    <div class="chk" onclick="toggle(this)"><div class="cb"></div><div class="chk-text">Я понимаю разницу между Способом 1 (одно фото) и Способом 2 (Face-Reference)</div></div>
+    <div class="chk" onclick="toggle(this)"><div class="cb"></div><div class="chk-text">Я умею работать с Gemini 3.1 как со стилистом (Инструменты → Создание изображений)</div></div>
+    <div class="chk" onclick="toggle(this)"><div class="cb"></div><div class="chk-text">Я знаю секрет реализма — почему важно совпадение источника света</div></div>
+    <div class="chk" onclick="toggle(this)"><div class="cb"></div><div class="chk-text">Я создал минимум один аватар и могу объяснить что получилось</div></div>
+  </div>
+  <div id="checklist-done" style="display:none;margin-top:20px;padding:18px 22px;background:rgba(181,237,24,.1);border:2px solid var(--accent);border-radius:14px">
+    <p style="font-family:var(--fh);font-size:16px;font-weight:700">🏆 Молодец! +100 XP — ты прошёл урок полностью!</p>
+  </div>
+</div></div>
+</section>
+
+<!-- S21 ДОМАШНЕЕ ЗАДАНИЕ -->
+<section class="slide hw-slide">
+<div class="sc"><div class="inn">
+  <div class="ey a1" style="color:var(--accent)">Домашнее задание</div>
+  <h2 class="tlg a2" style="color:#fff;margin-top:10px">Миссия «Мультивселенная Твоего Я» 🌌</h2>
+  <p class="blg a3" style="margin-top:16px;color:rgba(255,255,255,.7)">У тебя две цели. Обе обязательные. Поделись результатами в нашем чате — лучшие работы разбираем на следующем эфире!</p>
+  <div class="hwc a4" style="margin-top:24px">
+    <div class="hw-card">
+      <h3>🎯 Миссия 1: Путешественник во времени</h3>
+      <p>Через Google Flow создай три образа себя в разных эпохах: <strong style="color:var(--accent)">Древний Рим · Космос 2100 · Викторианская Англия</strong>. Твоё лицо должно оставаться узнаваемым на 100% на каждом из трёх фото!</p>
+    </div>
+    <div class="hw-card">
+      <h3>🎨 Миссия 2: Стилист Gemini</h3>
+      <p>Возьми один из трёх аватаров и попроси Gemini 3.1 <strong style="color:var(--accent)">три раза</strong> изменить его: смени освещение, смени эпоху, смени настроение. Посмотри как далеко ты можешь зайти, не меняя исходное лицо!</p>
+    </div>
+    <div class="hw-card" style="grid-column:span 1">
+      <h3>📌 Как сдать?</h3>
+      <p>Публикуй в нашем Discord или чате с хештегом <strong style="color:var(--accent)">#МоёЛицо</strong>. Обязательно добавь пометку #AIКонтент — мы создаём искусство честно!</p>
+      <div style="margin-top:14px">
+        <a href="https://discord.gg/aitrend" style="text-decoration:none">
+          <button class="pill dk" style="font-size:13px;padding:10px 20px">💬 Discord — показать работу</button>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="a5" style="margin-top:22px;padding:16px 22px;background:rgba(181,237,24,.06);border:2px solid rgba(181,237,24,.2);border-radius:12px">
+    <p style="font-size:14px;color:rgba(255,255,255,.7)">👋 <strong style="color:var(--accent)">На следующем уроке</strong> — мы научимся оживлять старые семейные фотографии. Подготовьте снимки из альбомов. До встречи, ИИ-креаторы!</p>
+  </div>
+</div></div>
+</section>
+
+<script>
+// ===== CORE =====
+const slides=document.querySelectorAll('.slide');
+const total=slides.length;
+document.getElementById('tc').textContent=total;
+
+// Dots
+const dotsEl=document.getElementById('dots');
+slides.forEach((_,i)=>{const d=document.createElement('div');d.className='dt';d.onclick=()=>slides[i].scrollIntoView({behavior:'smooth'});dotsEl.appendChild(d);});
+const dots=document.querySelectorAll('.dt');
+
+let cur=0;
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const i=Array.from(slides).indexOf(e.target);
+      cur=i;e.target.classList.add('v');
+      dots.forEach((d,j)=>d.classList.toggle('on',j===i));
+      document.getElementById('cc').textContent=i+1;
+      document.getElementById('tfill').style.width=((i/(total-1))*100)+'%';
+    }
+  });
+},{threshold:0.4});
+slides.forEach(s=>obs.observe(s));
+
+// Keys
+document.addEventListener('keydown',e=>{
+  const tag=document.activeElement.tagName;
+  if(tag==='TEXTAREA'||tag==='INPUT')return;
+  if(e.key==='ArrowDown'||e.key===' '){e.preventDefault();if(cur<total-1)slides[cur+1].scrollIntoView({behavior:'smooth'});}
+  else if(e.key==='ArrowUp'){e.preventDefault();if(cur>0)slides[cur-1].scrollIntoView({behavior:'smooth'});}
+});
+setTimeout(()=>document.getElementById('kh').classList.add('h'),3000);
+
+// ===== XP =====
+let xp=0;
+function aXP(n){
+  xp+=n;
+  document.getElementById('xpv').textContent=xp;
+  const xel=document.getElementById('xp');
+  xel.classList.remove('b');
+  void xel.offsetWidth;
+  xel.classList.add('b');
+  const t=document.getElementById('xptoast');
+  t.textContent='+'+n+' XP!';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+function copyText(btn,txt){
+  if(!txt||!txt.trim()){alert('Текст пуст!');return;}
+  const orig=btn.innerHTML;
+  const done=()=>{btn.classList.add('ok');btn.innerHTML='✅ Скопировано!';aXP(25);setTimeout(()=>{btn.classList.remove('ok');btn.innerHTML=orig;},2200);};
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(txt).then(done).catch(()=>fb(txt,done));
+  else fb(txt,done);
+}
+function fb(txt,cb){const ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);if(cb)cb();}
+
+// ===== TEXTAREA HELPERS =====
+function fillTA(txt){document.getElementById('ta1').value=txt;document.getElementById('ta1').focus();}
+function fillTA2(txt){document.getElementById('ta2').value=txt;document.getElementById('ta2').focus();}
+
+// ===== ERA CONSTRUCTOR =====
+let selectedEraRu='',selectedEraEn='',selectedStyleRu='',selectedStyleEn='';
+
+function setEra(btn,ru,en){
+  document.querySelectorAll('.era-btn').forEach(b=>{if(b.onclick.toString().includes('setEra'))b.classList.remove('active');});
+  btn.classList.add('active');
+  selectedEraRu=ru;selectedEraEn=en;
+  updateEraPrompt();
+}
+function setStyle(btn,ru,en){
+  ['sty-1','sty-2','sty-3','sty-4'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
+  btn.classList.add('active');
+  selectedStyleRu=ru;selectedStyleEn=en;
+  updateEraPrompt();
+}
+function updateEraPrompt(){
+  if(!selectedEraRu||!selectedStyleRu)return;
+  const promptRu=`Возьми это изображение и переодень меня в стиль «${selectedEraRu}». Стиль исполнения: ${selectedStyleRu}. Сохрани черты лица и освещение. Сделай образ аутентичным и детализированным.`;
+  const promptEn=`Take this image and dress me in the style of "${selectedEraEn}". Art style: ${selectedStyleEn}. Preserve facial features and lighting. Make the outfit authentic and highly detailed. Hyper-realistic.`;
+  const box=document.getElementById('era-result');
+  box.textContent=promptRu+'\n\n[EN]: '+promptEn;
+  box.classList.add('filled');
+  document.getElementById('era-copy-ru').style.display='inline-flex';
+  document.getElementById('era-copy-en').style.display='inline-flex';
+  aXP(10);
+}
+function copyEraRu(){
+  if(!selectedEraRu||!selectedStyleRu)return;
+  const txt=`Возьми это изображение и переодень меня в стиль «${selectedEraRu}». Стиль исполнения: ${selectedStyleRu}. Сохрани черты лица и освещение. Сделай образ аутентичным и детализированным.`;
+  fb(txt,()=>{aXP(25);alert('✅ Промпт на русском скопирован!');});
+}
+function copyEraEn(){
+  if(!selectedEraEn||!selectedStyleEn)return;
+  const txt=`Take this image and dress me in the style of "${selectedEraEn}". Art style: ${selectedStyleEn}. Preserve facial features and lighting. Make the outfit authentic and highly detailed. Hyper-realistic.`;
+  fb(txt,()=>{aXP(25);alert('✅ English prompt copied!');});
+}
+
+// ===== QUIZ =====
+const QQ=[
+  {
+    q:'Что такое Face-Reference и как он отличается от обычного FaceSwap?',
+    o:['Face-Reference — это просто другое название FaceSwap','В Face-Reference ИИ строит тебя заново в новом окружении, запоминая черты лица как эталон','Face-Reference работает только с видео','Это платная функция Google Flow'],
+    a:1,
+    e:'Face-Reference — когда ты даёшь ИИ своё фото как «эталон». Он запоминает форму носа, расстояние между глазами, линию подбородка. В отличие от простого FaceSwap, ИИ не «натягивает» лицо, он строит тебя заново в новом окружении.'
+  },
+  {
+    q:'Почему важно ждать несколько секунд после загрузки фото в Google Flow?',
+    o:['Это требование интернета','Google Flow должен обработать изображение — считать лицо, запомнить черты и геометрию','Фото ещё загружается','Это баг сервиса'],
+    a:1,
+    e:'Если нажать слишком быстро после загрузки фото, система может не распознать лицо правильно и результат будет смазанным. Нужно подождать пока миниатюра фото появится в поле ввода — это сигнал что система приняла изображение.'
+  },
+  {
+    q:'Что такое SynthID и зачем он нужен?',
+    o:['Это новое приложение от Google','Невидимый цифровой водяной знак в пикселях каждого ИИ-изображения — как цифровой паспорт контента','Фильтр для улучшения качества фото','Система защиты аккаунта'],
+    a:1,
+    e:'Google разработал технологию SynthID — невидимый цифровой водяной знак, который встраивается в пиксели каждого изображения, созданного ИИ. Ты его не увидишь, но специальные программы легко обнаружат. Это как цифровой паспорт твоего контента.'
+  },
+  {
+    q:'Ученик сделал FaceSwap и лицо выглядит неестественно на стыке с шеей. Что поможет?',
+    o:['Нужно купить премиум','Добавить в промпт seamless blend и natural skin tones','Использовать другой телефон','Это нельзя исправить'],
+    a:1,
+    e:'Артефакты на стыке лица и тела называются «швами». Они появляются когда ИИ не получает инструкций о плавном переходе. Ключевые слова «seamless blend» (бесшовное слияние) и «natural lighting» значительно уменьшают этот эффект.'
+  },
+  {
+    q:'Почему промпты для Google Flow лучше писать на английском?',
+    o:['Google не поддерживает русский язык','ИИ обучен преимущественно на английских данных и точнее понимает нюансы на английском','Русский язык медленнее обрабатывается','Это правило сервиса'],
+    a:1,
+    e:'Большинство генеративных ИИ обучены преимущественно на англоязычном контенте. Английские промпты обрабатываются точнее — ИИ лучше понимает нюансы слов «seamless blend», «cinematic», «hyper-realistic». Именно поэтому на уроке все промпты даны на обоих языках с переводом.'
+  },
+  {
+    q:'Какое количество генераций рекомендуется выбирать для первого знакомства ИИ с твоим лицом?',
+    o:['1 — чтобы не тратить кредиты','2 — золотой баланс','4 — больше вариантов для первого знакомства','10 — максимум вариантов'],
+    a:2,
+    e:'Для первого знакомства модели с твоим лицом в новом контексте рекомендуется 4 варианта. Больше вариантов — больше шансов что хотя бы один получится по-настоящему хорошо. Для обычных запросов 2 варианта — золотой баланс.'
+  },
+  {
+    q:'Почему в Gemini 3.1 нужно сначала выбрать «Создание изображений» перед вводом промпта?',
+    o:['Без этого Gemini не работает','Чтобы активировать каталог стилей и режим генерации изображений','Это защита от спама','Просто традиция'],
+    a:1,
+    e:'В интерфейсе Gemini 3.1 режим создания изображений активируется через Инструменты → Создание изображений. После этого открывается каталог стилистик изображений. Без этого шага Gemini будет отвечать текстом, а не генерировать изображения.'
+  },
+];
+
+let qi=0,qs=0,qAnswered=false;
+function renderQ(){
+  const c=document.getElementById('quiz-container');
+  if(qi>=QQ.length){
+    const pct=Math.round(qs/QQ.length*100);
+    let emoji='💪',msg='Хороший старт — повтори материал!';
+    if(pct===100){emoji='🏆';msg='Идеально! Ты — мастер Gemini и Google Flow!';}
+    else if(pct>=85){emoji='🪞';msg='Отлично! Почти профессионал.';}
+    else if(pct>=57){emoji='📚';msg='Неплохо! Повтори слайды 5–8.';}
+    c.innerHTML=`<div style="text-align:center;padding:28px 0"><div style="font-size:70px;margin-bottom:14px">${emoji}</div><div style="font-family:var(--fh);font-size:44px;font-weight:900;color:var(--primary);margin-bottom:10px">${qs} / ${QQ.length}</div><p class="blg" style="margin-bottom:6px">${msg}</p><p class="bmd">${pct}% правильных ответов</p><button class="pill pr sm" style="margin-top:18px" onclick="restartQ()">🔄 Ещё раз</button></div>`;
+    if(pct>=85)aXP(200);else if(pct>=57)aXP(100);else aXP(50);
+    document.getElementById('qprogb').style.width='100%';
+    return;
+  }
+  const q=QQ[qi];
+  document.getElementById('qprogb').style.width=(qi/QQ.length*100)+'%';
+  c.innerHTML=`<div class="qnum">Вопрос ${qi+1} из ${QQ.length}</div><div class="quiz-q">${q.q}</div>${q.o.map((o,i)=>`<button class="qo" onclick="ansQ(${i})">${o}</button>`).join('')}<div id="qexp"></div><div id="qnxt" style="margin-top:16px;display:none;text-align:right"><button class="pill pr sm" onclick="nextQ()">Дальше →</button></div>`;
+  qAnswered=false;
+}
+function ansQ(i){
+  if(qAnswered)return;
+  qAnswered=true;
+  const q=QQ[qi];
+  document.querySelectorAll('.qo').forEach((o,idx)=>{o.style.pointerEvents='none';if(idx===q.a)o.classList.add('correct');else if(idx===i)o.classList.add('wrong');});
+  if(i===q.a){qs++;aXP(50);}
+  document.getElementById('qexp').innerHTML=`<div class="quiz-exp"><strong>${i===q.a?'✅ Правильно!':'❌ Неправильно.'}</strong> ${q.e}</div>`;
+  document.getElementById('qnxt').style.display='block';
+}
+function nextQ(){qi++;renderQ();}
+function restartQ(){qi=0;qs=0;renderQ();}
+renderQ();
+
+// ===== SORT GAME =====
+const cards=[
+  {t:'FaceSwap с разрешением своего селфи',g:true},
+  {t:'Подписать контент #AIКонтент',g:true},
+  {t:'Gemini 3.1 сменил стиль моего фото',g:true},
+  {t:'Face-Reference с согласия другого человека',g:true},
+  {t:'Тест FaceSwap только для личного просмотра',g:true},
+  {t:'FaceSwap с фото знаменитости без согласия',g:false},
+  {t:'Выдать ИИ-аватар за настоящее фото без пометки',g:false},
+  {t:'Создать дипфейк для мошенничества',g:false},
+  {t:'FaceSwap ребёнка без ведома родителей',g:false},
+  {t:'Использовать чужое лицо для оскорбления',g:false},
+];
+let activeCard=null,placements={};
+function renderCards(){
+  document.getElementById('game-cards').innerHTML=cards.map((c,i)=>`<div class="game-card" id="gc-${i}" onclick="selCard(${i})">${c.t}</div>`).join('');
+  document.getElementById('zone-good-items').innerHTML='';
+  document.getElementById('zone-bad-items').innerHTML='';
+}
+function selCard(i){
+  if(placements.hasOwnProperty(i))return;
+  document.querySelectorAll('.game-card').forEach(e=>e.classList.remove('active'));
+  const el=document.getElementById('gc-'+i);
+  if(el)el.classList.add('active');
+  activeCard=i;
+  document.getElementById('zone-good').classList.add('highlight');
+  document.getElementById('zone-bad').classList.add('highlight');
+}
+function placeCard(isGood){
+  if(activeCard===null)return;
+  placements[activeCard]=isGood;
+  const el=document.getElementById('gc-'+activeCard);
+  if(el){el.classList.remove('active');el.style.display='none';}
+  const zi=document.getElementById(isGood?'zone-good-items':'zone-bad-items');
+  const item=document.createElement('div');
+  item.className='zone-item';item.textContent=cards[activeCard].t;item.dataset.idx=activeCard;
+  zi.appendChild(item);
+  document.getElementById('zone-good').classList.remove('highlight');
+  document.getElementById('zone-bad').classList.remove('highlight');
+  activeCard=null;
+  if(Object.keys(placements).length===cards.length)document.getElementById('check-game').style.display='inline-flex';
+}
+function checkGame(){
+  let c=0;
+  cards.forEach((card,i)=>{
+    const ok=placements[i]===card.g;
+    if(ok)c++;
+    ['zone-good-items','zone-bad-items'].forEach(zid=>{
+      document.getElementById(zid).querySelectorAll('.zone-item').forEach(item=>{
+        if(parseInt(item.dataset.idx)===i){
+          item.style.background=ok?'rgba(46,213,115,.15)':'rgba(255,71,87,.15)';
+          item.style.borderColor=ok?'var(--green)':'var(--red)';
+          item.style.color=ok?'var(--green)':'var(--red)';
+        }
+      });
+    });
+  });
+  const res=document.getElementById('game-result');
+  if(c===cards.length){res.innerHTML='<span class="tg">🎉 Идеально! +50 XP</span>';aXP(50);}
+  else res.innerHTML=`<span class="to">Правильно: ${c} из ${cards.length}. Попробуй ещё раз!</span>`;
+  document.getElementById('check-game').style.display='none';
+  document.getElementById('reset-game').style.display='inline-flex';
+}
+function resetGame(){placements={};activeCard=null;document.getElementById('game-result').innerHTML='';document.getElementById('reset-game').style.display='none';document.getElementById('check-game').style.display='none';renderCards();}
+renderCards();
+
+// ===== CHECKLIST =====
+let clDone=false;
+function toggle(el){
+  el.classList.toggle('on');
+  el.querySelector('.cb').textContent=el.classList.contains('on')?'✓':'';
+  const total=document.querySelectorAll('.chk').length;
+  const done=document.querySelectorAll('.chk.on').length;
+  if(done===total&&!clDone){clDone=true;document.getElementById('checklist-done').style.display='block';aXP(100);}
+  else if(done<total)document.getElementById('checklist-done').style.display='none';
+}
+</script>
+</body>
+</html>
