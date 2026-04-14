@@ -601,32 +601,38 @@ body{font-family:var(--fb);background:var(--bg);color:var(--dark);height:100%;-w
 </section>
 
 <!-- S12 ПРОМПТ №3 — GEMINI СТИЛИСТ -->
+<!-- S12 ПРОМПТ №3 — GEMINI СТИЛИСТ -->
 <section class="slide">
-<div class="sc"><div class="inns">
+<div class="sc"><div class="inn">
   <div class="ey a1">Практика · Промпт 3</div>
   <h2 class="tlg a2">Диалог со стилистом — Викторианская эпоха</h2>
-  <p class="blg a3" style="margin-top:12px">Прикрепи своё фото в Gemini и скажи ему на обычном языке что хочешь изменить. Он понимает тебя!</p>
-  <div class="a4" style="margin-top:16px">
-    <div class="prompt-box ru">
-      <div class="prompt-label">🇷🇺 Русский</div>
-      <p class="prompt-text" id="p3ru">Возьми это изображение и «переодень» меня в стиль викторианской эпохи. Сохрани освещение и черты лица. Добавь детали: корсет, кружева, высокую причёску.</p>
-      <button class="cpb" onclick="copyText(this, document.getElementById('p3ru').textContent)">📋 Скопировать RU</button>
+  <div class="a3" style="margin-top:16px;display:grid;grid-template-columns:1fr 240px;gap:24px;align-items:start">
+    <div>
+      <p class="blg" style="margin-bottom:14px">Прикрепи своё фото в Gemini и скажи ему на обычном языке что хочешь изменить. Он понимает тебя!</p>
+      <div class="prompt-box ru">
+        <div class="prompt-label">🇷🇺 Русский</div>
+        <p class="prompt-text" id="p3ru">Возьми это изображение и «переодень» меня в стиль викторианской эпохи. Сохрани освещение и черты лица. Добавь детали: корсет, кружева, высокую причёску.</p>
+        <button class="cpb" onclick="copyText(this, document.getElementById('p3ru').textContent)">📋 Скопировать RU</button>
+      </div>
+      <div class="prompt-box en">
+        <div class="prompt-label">🇬🇧 English</div>
+        <p class="prompt-text" id="p3en">Take this image and dress me in Victorian era style. Preserve the lighting and facial features. Add details: corset, lace, high hairstyle. Keep the face recognizable and realistic. Style: oil painting.</p>
+        <button class="cpb" onclick="copyText(this, document.getElementById('p3en').textContent)">📋 Скопировать EN</button>
+      </div>
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="padding:12px 14px;background:rgba(104,91,199,.05);border-radius:10px;border:1.5px solid rgba(104,91,199,.2)">
+          <p class="bmd" style="font-size:12px"><strong class="tp">💡 Совет:</strong> Попроси сменить освещение, эпоху или настроение — без изменения лица!</p>
+        </div>
+        <div style="padding:12px 14px;background:rgba(181,237,24,.06);border-radius:10px;border:1.5px solid rgba(181,237,24,.3)">
+          <p class="bmd" style="font-size:12px"><strong style="color:var(--accent)">🎨 Другие эпохи:</strong> Древний Рим, Космос 2100, Япония эпохи Эдо!</p>
+        </div>
+      </div>
     </div>
-    <div class="prompt-box en">
-      <div class="prompt-label">🇬🇧 English</div>
-      <p class="prompt-text" id="p3en">Take this image and dress me in Victorian era style. Preserve the lighting and facial features. Add details: corset, lace, high hairstyle. Keep the face recognizable and realistic. Style: oil painting.</p>
-      <button class="cpb" onclick="copyText(this, document.getElementById('p3en').textContent)">📋 Скопировать EN</button>
-    </div>
-    <div style="border-radius:14px;overflow:hidden;border:3px solid rgba(104,91,199,.4);box-shadow:0 8px 24px rgba(104,91,199,.15)">
-        <img src="data/WhatsApp_Image_2026-02-04_at_13_26_09__1_.jpeg" style="width:100%;display:block;object-fit:cover;object-position:top;height:280px">
+    <div style="text-align:center">
+      <div style="border-radius:14px;overflow:hidden;border:3px solid rgba(104,91,199,.4);box-shadow:0 8px 24px rgba(104,91,199,.15)">
+        <img src="data/Gemini_Generated_Image_ (3).png" style="width:100%;display:block;object-fit:cover;object-position:top;height:360px">
       </div>
-    <div style="margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
-      <div style="padding:12px 14px;background:rgba(104,91,199,.05);border-radius:10px;border:1.5px solid rgba(104,91,199,.2)">
-        <p class="bmd" style="font-size:12px"><strong class="tp">💡 Совет:</strong> Попроси Gemini сменить освещение, эпоху или настроение — без изменения лица!</p>
-      </div>
-      <div style="padding:12px 14px;background:rgba(181,237,24,.06);border-radius:10px;border:1.5px solid rgba(181,237,24,.3)">
-        <p class="bmd" style="font-size:12px"><strong style="color:var(--accent)">🎨 Другие эпохи:</strong> Древний Рим, Космос 2100, Япония эпохи Эдо — пробуй всё!</p>
-      </div>
+      <div style="margin-top:8px;display:inline-flex;align-items:center;gap:6px;background:rgba(104,91,199,.08);border:1.5px solid rgba(104,91,199,.25);border-radius:100px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--primary)">✨ Результат Gemini</div>
     </div>
   </div>
 </div></div>
